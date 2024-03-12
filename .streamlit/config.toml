@@ -1,0 +1,13 @@
+[theme]
+base="light"  # ou "dark" selon votre préférence
+
+[browser]
+gatherUsageStats = false
+
+[deprecation]
+showPyplotGlobalUse = false
+
+# Pour enlever le footer "Made with Streamlit"
+[server]
+enableCORS = false
+footer = false  # Cette ligne enlève le texte "Made with Streamlit"

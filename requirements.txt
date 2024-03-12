@@ -1,0 +1,7 @@
+pandas
+streamlit
+hashlib
+pymongo 
+streamlit_option_menu
+datetime
+re
