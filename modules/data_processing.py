@@ -291,7 +291,7 @@ def rates_calculation():
                     spreads_manager.close_connection()
 
 
-def users_management():
+ddef users_management():
     users_manager = Users()
 
     st.title('Gestion des utilisateurs')
@@ -326,20 +326,11 @@ def users_management():
                 users_manager.insert_user({"Prenom": prenom, "Nom": nom, "Email": email, "Pwd": pwd})
                 st.success(f'Utilisateur {prenom} {nom} ajouté avec succès.')
 
-# Initialisation de l'état de session pour l'email sélectionné, si nécessaire
-    if 'selected_email' not in st.session_state:
-        st.session_state['selected_email'] = None
-
-    user_emails = [user['Email'] for user in users_manager.get_all_users()]
-
+    # Sélectionner l'utilisateur à modifier ou à supprimer par email
     st.header("Modifier un utilisateur")
     with st.form("edit_user_form"):
-        # Utilisation de l'email stocké dans l'état de session comme valeur par défaut
-        selected_email = st.selectbox('Sélectionner l\'email de l\'utilisateur', options=user_emails, index=user_emails.index(st.session_state['selected_email']) if st.session_state['selected_email'] in user_emails else 0)
-        
-        # Mise à jour de l'email sélectionné dans l'état de session après la sélection
-        st.session_state['selected_email'] = selected_email
-
+        user_emails = [user['Email'] for user in users_manager.get_all_users()]
+        selected_email = st.selectbox('Sélectionner l\'email de l\'utilisateur', options=user_emails)
         user_details = users_manager.find_user_by_email(selected_email)
 
         if user_details:
@@ -350,13 +341,10 @@ def users_management():
             update_button = st.form_submit_button('Mettre à jour')
             if update_button:
                 update_data = {"Prenom": prenom, "Nom": nom}
-                if pwd:  # Inclusion du nouveau mot de passe si fourni
+                if pwd:  # Si un nouveau mot de passe est fourni, incluez-le dans les données de mise à jour
                     update_data["Pwd"] = pwd
                 users_manager.update_user(selected_email, update_data)
                 st.success(f'Utilisateur {prenom} {nom} mis à jour avec succès.')
-                # Force Streamlit à recharger la page pour afficher les changements
-                st.experimental_rerun()
-
 
     # Gestion de la suppression d'un utilisateur
     st.header("Supprimer un utilisateur")
