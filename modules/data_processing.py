@@ -291,7 +291,7 @@ def rates_calculation():
                     spreads_manager.close_connection()
 
 
-ddef users_management():
+def users_management():
     users_manager = Users()
 
     st.title('Gestion des utilisateurs')
