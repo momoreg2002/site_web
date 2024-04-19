@@ -74,6 +74,7 @@ def data_insert_file():
         with st.spinner("Traitement en cours..."):
             # Supposons que load_data_txt_for_spot a été ajustée pour traiter l'objet fichier
             data = load_data_txt_for_spot(uploaded_file)
+            st.write(data)
             spot_manager = Spot()
             nb_delete = spot_manager.delete_all_spot()
             inserted_ids = spot_manager.insert_many_spot(data)
