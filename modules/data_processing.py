@@ -34,17 +34,23 @@ def load_data_txt_for_spot(file_obj):
     lines = content_text.split('\n')
     data = []
     for line in lines:
-        values = line.split('|')
+        values = line.strip().split('|')
         if len(values) >= 4 and values[1] in needed_currencies:
             try:
+                rate_date = pd.to_datetime(values[3], errors='coerce')
+                if rate_date is pd.NaT:
+                    rate_date = canadien_date()  # Utilisation de la date canadienne si la conversion échoue
+                else:
+                    rate_date = rate_date.strftime('%Y-%m-%d')
+
                 spot_document = {
                     "Currency_Code": values[1],
                     "Rate": float(values[2]),
-                    "UpdateDate": pd.to_datetime(values[3], errors='coerce').strftime('%Y-%m-%d') if pd.to_datetime(values[3], errors='coerce') is not pd.NaT else None
+                    "UpdateDate": rate_date
                 }
                 data.append(spot_document)
             except ValueError as e:
-                # Gérer l'erreur de conversion (facultatif)
+                # Gérer l'erreur de conversion
                 print(f"Erreur lors de la conversion de la ligne: {line}. Erreur: {e}")
     return data
 
