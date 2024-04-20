@@ -37,22 +37,27 @@ def load_data_txt_for_spot(file_obj):
         values = line.strip().split('|')
         if len(values) >= 3 and values[1] in needed_currencies:
             try:
-                rate_date = pd.to_datetime(values[3], errors='coerce')
-                if rate_date is pd.NaT:
-                    rate_date = canadien_date()  # Utilisation de la date canadienne si la conversion échoue
+                rate = float(values[2])
+                if len(values) > 3 and values[3]:  # Check if a fourth element (date) is present and not empty
+                    rate_date = pd.to_datetime(values[3], format='%m/%d/%Y %H:%M', errors='coerce')
+                    if rate_date is pd.NaT:
+                        rate_date = canadien_date()  # Use Canadian date if conversion fails
+                    else:
+                        rate_date = rate_date.strftime('%Y-%m-%d')
                 else:
-                    rate_date = rate_date.strftime('%Y-%m-%d')
-
+                    rate_date = canadien_date()  # Use Canadian date if no date is provided
+                
                 spot_document = {
                     "Currency_Code": values[1],
-                    "Rate": float(values[2]),
+                    "Rate": rate,
                     "UpdateDate": rate_date
                 }
                 data.append(spot_document)
             except ValueError as e:
-                # Gérer l'erreur de conversion
-                print(f"Erreur lors de la conversion de la ligne: {line}. Erreur: {e}")
+                # Handle the conversion error
+                print(f"Error converting the line: {line}. Error: {e}")
     return data
+
 
 def canadien_date():
     timezone = pytz.timezone('America/Toronto')
