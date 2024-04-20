@@ -60,7 +60,7 @@ def load_data_txt_for_spot(file_obj):
 
 
 def canadien_date():
-    timezone = pytz.timezone('America/Ottawa')
+    timezone = pytz.timezone('America/Montreal')
     current_date_in_canada = datetime.now(timezone).date()
     formatted_date = current_date_in_canada.strftime('%m/%d/%Y %H:%M')
     return formatted_date
