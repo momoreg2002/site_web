@@ -43,7 +43,7 @@ def load_data_txt_for_spot(file_obj):
                     if rate_date is pd.NaT:
                         rate_date = canadien_date()  # Use Canadian date if conversion fails
                     else:
-                        rate_date = rate_date.strftime('%Y-%m-%d')
+                        rate_date = rate_date.strftime('%m/%d/%Y %H:%M')
                 else:
                     rate_date = canadien_date()  # Use Canadian date if no date is provided
                 
@@ -55,14 +55,14 @@ def load_data_txt_for_spot(file_obj):
                 data.append(spot_document)
             except ValueError as e:
                 # Handle the conversion error
-                print(f"Error converting the line: {line}. Error: {e}")
+                st.error(f"Error converting the line: {line}. Error: {e}")
     return data
 
 
 def canadien_date():
     timezone = pytz.timezone('America/Toronto')
     current_date_in_canada = datetime.now(timezone).date()
-    formatted_date = current_date_in_canada.strftime('%Y-%m-%d')
+    formatted_date = current_date_in_canada.strftime('%m/%d/%Y %H:%M')
     return formatted_date
 
 def is_valid_email(email):
@@ -79,7 +79,7 @@ def data_insert_file():
         with st.spinner("Traitement en cours..."):
             # Supposons que load_data_txt_for_spot a été ajustée pour traiter l'objet fichier
             data = load_data_txt_for_spot(uploaded_file)
-            st.write(data)
+            #st.write(data)
             spot_manager = Spot()
             nb_delete = spot_manager.delete_all_spot()
             inserted_ids = spot_manager.insert_many_spot(data)
