@@ -35,7 +35,7 @@ def load_data_txt_for_spot(file_obj):
     data = []
     for line in lines:
         values = line.strip().split('|')
-        if len(values) >= 4 and values[1] in needed_currencies:
+        if len(values) >= 3 and values[1] in needed_currencies:
             try:
                 rate_date = pd.to_datetime(values[3], errors='coerce')
                 if rate_date is pd.NaT:
