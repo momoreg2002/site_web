@@ -15,7 +15,7 @@ def currency_needed():
     return Currency_Code
 
 
-load_data_txt_for_spot(file_obj):
+def load_data_txt_for_spot(file_obj):
     """
     Lire les données à partir de l'objet fichier téléchargé, filtrer selon les devises nécessaires,
     et les préparer pour l'insertion.
