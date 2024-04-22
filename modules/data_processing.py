@@ -14,6 +14,21 @@ def currency_needed():
     Currency_Code = ['USD', 'EUR', 'MXN', 'GBP', 'JPY', 'CHF', 'DOP', 'COP', 'MAD', 'CRC', 'THB', 'BRL', 'VND', 'IND']
     return Currency_Code
 
+def round_rate(rate):
+    """
+    Arrondit le taux à six chiffres après la virgule, en utilisant le septième chiffre pour décider.
+    """
+    scale = 10**7  # On multiplie par 10^7 pour déplacer le septième chiffre après la virgule devant la virgule
+    temp = rate * scale
+    seventh_digit = int(temp) % 10  # Extraire le septième chiffre
+    
+    if seventh_digit > 5:
+        return round(rate + 5 * 10**-7, 6)
+    elif seventh_digit < 5:
+        return round(rate, 6)
+    else:  # seventh_digit == 5
+        return round(rate + 5 * 10**-7, 6)
+
 def load_data_txt_for_spot(file_obj):
     """
     Lire les données à partir de l'objet fichier téléchargé, filtrer selon les devises nécessaires,
@@ -25,6 +40,12 @@ def load_data_txt_for_spot(file_obj):
     Returns:
         list: Une liste de dictionnaires prêts à être insérés.
     """
+    def currency_needed():
+        return ['USD', 'EUR', 'GBP']  # Just an example
+
+    def canadien_date():
+        return pd.Timestamp.now().strftime('%m/%d/%Y %H:%M')  # Current timestamp in a specific format
+
     # Obtenir la liste des devises nécessaires
     needed_currencies = currency_needed()
     
@@ -38,6 +59,8 @@ def load_data_txt_for_spot(file_obj):
         if len(values) >= 3 and values[1] in needed_currencies:
             try:
                 rate = float(values[2])
+                rounded_rate = round_rate(rate)  # Utilisation de la fonction d'arrondissement ajustée
+
                 if len(values) > 3 and values[3]:  # Check if a fourth element (date) is present and not empty
                     rate_date = pd.to_datetime(values[3], format='%m/%d/%Y %H:%M', errors='coerce')
                     if rate_date is pd.NaT:
@@ -49,7 +72,7 @@ def load_data_txt_for_spot(file_obj):
                 
                 spot_document = {
                     "Currency_Code": values[1],
-                    "Rate": rate,
+                    "Rate": rounded_rate,
                     "UpdateDate": rate_date
                 }
                 data.append(spot_document)
@@ -57,7 +80,6 @@ def load_data_txt_for_spot(file_obj):
                 # Handle the conversion error
                 st.error(f"Error converting the line: {line}. Error: {e}")
     return data
-
 
 def canadien_date():
     timezone = pytz.timezone('Etc/GMT-4')
