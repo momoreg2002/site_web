@@ -9,12 +9,50 @@ class Spot:
         self.db_connection.connect()  # Établit la connexion et stocke la collection
         self.collection = self.db_connection.collection
 
+    def round_rate(self, rate):
+        """
+        Arrondit le taux à six chiffres après la virgule, en utilisant le septième chiffre pour décider.
+        """
+        scale = 10**7
+        temp = rate * scale
+        seventh_digit = int(temp) % 10
+        if seventh_digit > 5:
+            return round(rate + 5 * 10**-7, 6)
+        elif seventh_digit < 5:
+            return round(rate, 6)
+        else:  # seventh_digit == 5
+            return round(rate + 5 * 10**-7, 6)
+
+    def insert_spot(self, data: dict):
+        """Insère un nouveau document dans la collection SPOT."""
+        if 'Rate' in data:
+            data['Rate'] = self.round_rate(data['Rate'])
+        result = self.collection.insert_one(data)
+        return result.inserted_id
+    
+    def insert_many_spot(self, rates_list: list) -> list:
+        """Insère plusieurs documents de taux dans la collection."""
+        for rate_data in rates_list:
+            if 'Rate' in rate_data:
+                rate_data['Rate'] = self.round_rate(rate_data['Rate'])
+        result = self.collection.insert_many(rates_list)
+        return result.inserted_ids
+
+    def update_spot_rate(self, currency_code: str, new_rate: float, date: str):
+        """Met à jour le taux pour une devise spécifique."""
+        rounded_rate = self.round_rate(new_rate)
+        result = self.collection.update_one(
+            {"Currency_Code": currency_code},
+            {"$set": {"Rate": rounded_rate, "UpdateDate": date}}
+        )
+        return result
+ '''
     def insert_spot(self, data : dict):
         """Insère un nouveau document dans la collection SPOT."""
         result = self.collection.insert_one(data)
         return result.inserted_id
     
-    def insert_many_spot(self, rates_list : list) -> list:
+     def insert_many_spot(self, rates_list : list) -> list:
         """Insère plusieurs documents de taux dans la collection.
         
         Args:
@@ -28,18 +66,21 @@ class Spot:
         
         result = self.collection.insert_many(rates_list)
         return result.inserted_ids
+         '''
 
     def find_spot_by_currency(self, currency_code :str):
         """Trouve un document par son code de devise."""
         return self.collection.find_one({"Currency_Code": currency_code})
 
-    def update_spot_rate(self, currency_code :str, new_rate : float, date :str):
+    '''def update_spot_rate(self, currency_code :str, new_rate : float, date :str):
         """Met à jour le taux pour une devise spécifique."""
         result = self.collection.update_one(
             {"Currency_Code": currency_code},
             {"$set": {"Rate": new_rate, "UpdateDate": date }}
         )
         return result
+        
+        '''
 
     def delete_spot(self, currency_code : str):
         """Supprime un document par son code de devise."""
