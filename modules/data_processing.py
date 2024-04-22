@@ -40,11 +40,6 @@ def load_data_txt_for_spot(file_obj):
     Returns:
         list: Une liste de dictionnaires prêts à être insérés.
     """
-    def currency_needed():
-        return ['USD', 'EUR', 'GBP']  # Just an example
-
-    def canadien_date():
-        return pd.Timestamp.now().strftime('%m/%d/%Y %H:%M')  # Current timestamp in a specific format
 
     # Obtenir la liste des devises nécessaires
     needed_currencies = currency_needed()
